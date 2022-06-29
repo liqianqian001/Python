@@ -78,8 +78,9 @@ for name in namelist:
     print(name)
 '''
 
-'''
+
 # 查     【in ， not in】
+'''
 findName = input("请输入要查找的学生姓名：")
 
 if findName in namelist:
@@ -154,13 +155,41 @@ products = [["iphone", "6888"], ["MacPro", "14800"], ["小米6", "2499"], ["Coff
 
 print("-"*6+"\t"+"商品列表"+"\t"+"-"*6)
 number = 0
+for product in products:
+    product.insert(0, number)
+    number += 1
+    i = 0
+    for data in product:
+        if i < 2:
+            print(data, end="\t")
+        else:
+            print(data)
+        i += 1
 
+# print(products)       # 商品列表已加入编号
+
+shoppingCart = []
+
+goodNumber = input("需要购买什么商品？")
+for product in products:
+    for data in product:
+        if goodNumber == data:
+            shoppingCart.append(product)
+    # print(product[0])
+    # if goodNumber in product:
+    # shoppingCart.append(product)
+print(shoppingCart)
+
+
+
+'''
 for product in products:
     print(number, end="\t")
     number += 1
     for data in product:
         print(data, end="\t")
     print("")
+'''
 
 '''
 shoppingCart = []
