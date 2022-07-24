@@ -12,9 +12,11 @@ def main():
     baseurl = "https://movie.douban.com/top250？start="
     #1.爬取网页
     datalist = getData(baseurl)
-    savepath = "豆瓣电影Top250.xls"
+    #savepath = "豆瓣电影Top250.xls"    #保存到Excel的方式
+    dbpath = "movie.db"     #保存到数据库的方式
     #3.保存数据
-    saveData(datalist,savepath)
+    #saveData(datalist,savepath)
+    saveData2DB(datalist,dbpath)
     askURL("https://movie.douban.com/top250？start=")
 
 #影片详情链接的规则
@@ -31,7 +33,6 @@ findJudge = re.compile(r'<span>(\d*)人评价</span>')
 findInq = re.compile(r'<span class="inq">(.*)</span>')
 #找到影片的相关内容
 findBd = re.compile(r'<p class="">(.*?)</p>',re.S)
-
 
 #爬取网页
 def getData(baseurl):
@@ -83,7 +84,6 @@ def getData(baseurl):
     #print(datalist)        #测试
     return datalist
 
-
 #得到一个指定网页的内容
 def askURL(url):
     head = {
@@ -117,6 +117,47 @@ def saveData(datalist,savepath):
             sheet.write(i+1,j,data[j])  #数据
 
     book.save('student.xls')  # 保存数据表
+
+def saveData2DB(datalist,dbpath):
+    init_db(dbpath)
+    conn = sqlite3.connect(dbpath)
+    cur = conn.cursor()
+
+    for data in datalist:
+        for index in range(len(data)):
+            if index == 4 or index == 5:
+                continue
+            data[index] = '"'+data[index]+'"'
+        sql = '''
+            insert into movie250(
+            info_link,cname,ename,score,rated,instroduction,info)
+            values(%s)'''%",".join(data)
+        cur.execute(sql)
+        conn.commit()
+    cur.close()
+    conn.close()
+
+def init_db(dbpath):
+    # 创建数据表
+    sql = '''
+        create table movie250
+        (
+        id integer primary key autoincrement,
+        info_link text,
+        pic_link,text,
+        cname varchar,
+        ename varchar,
+        score numeric,
+        rated numeric,
+        introduction text,
+        info text
+        )
+    '''
+    conn = sqlite3.connect(dbpath)
+    cursor = conn.cursor()  #获取游标
+    cursor.execute(sql)
+    conn.commit()
+    conn.close()
 
 if __name__ == "__main__":      #当执行程序时
 #调用函数
